@@ -1,6 +1,7 @@
 <?php
-include 'config.php';
-include 'func.php';
+include './conf/db.config.php';
+include './conf/path.config.php';
+include './libs/func.php';
 
 $currentVersionDate = getVersionDate();
 
