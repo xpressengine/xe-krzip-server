@@ -7,26 +7,17 @@
  * @author NAVER (developers@xpressengine.com)
  */
 
-header("Content-Type: text/html; charset= UTF-8 ");
-
 define('__KRZIP_PATH__', realpath( dirname(__FILE__) . "/../" ));
 
 include __KRZIP_PATH__ . "/conf/db.config.php";
 include __KRZIP_PATH__ . '/conf/path.config.php';
 include __KRZIP_PATH__ . '/libs/func.php';
 
-// 로그인 인증
-if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != __KRZIP_ADMIN_ID__ || $_SERVER['PHP_AUTH_PW'] != __KRZIP_ADMIN_PW__ ) {
-	echo krzipAuthenticate();
-	exit;
-}
-
 // remove time limit 
 @set_time_limit(0);
 
-
 ob_start();
-echo "KRZIP 데이터 적용을 시작합니다.<br/>\n";
+echo "KRZIP insert client 를 시작합니다.\n";
 ob_flush();
 flush();
 
@@ -101,7 +92,6 @@ if( is_resource( $fpCache ) === false ) {
 }
 chmod( __KRZIP_PATH_CACHE_ADDR__ . $nextVersionDate . ".php", 0777 );
 
-
 // set new table
 $query = "SHOW TABLES LIKE 'kr_zipcode_v2{$nextVersionDate}'";
 $row = $mysqli->query( $query )->fetch_object();
@@ -137,7 +127,7 @@ $separator = "|";
 $arrCacheAddr1 = array();
 $arrCacheAddr2 = array();
 
-echo "데이터 입력을 시작합니다.<br/>\n";
+echo "데이터 입력을 시작합니다.\n";
 ob_flush();
 flush();
 $cLine = 0;
@@ -233,7 +223,7 @@ foreach( $lFileName as $fileName ) {
 			$cLine++;
 			echo ".";
 			if( $cLine > 200 ) {
-				echo "<br/>\n";
+				echo "\n";
 				$cLine = 0;
 			}
 			ob_flush();
@@ -255,7 +245,7 @@ foreach( $lFileName as $fileName ) {
 	fclose( $fp );
 }
 
-echo "<br/>\n데이터 입력을 완료했습니다. 캐시파일을 만듭니다.<br/>\n";
+echo "\n데이터 입력을 완료했습니다. 캐시파일을 만듭니다.\n";
 ob_flush();
 flush();
 

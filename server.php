@@ -13,6 +13,7 @@ define('__KRZIP_PATH__', dirname(__FILE__));
 include __KRZIP_PATH__ . "/conf/db.config.php";
 include __KRZIP_PATH__ . '/conf/path.config.php';
 include __KRZIP_PATH__ . '/libs/func.php';
+$_POST = $_GET;
 
 $mysqli = @new mysqli( __KRZIP_DB_HOST__, __KRZIP_DB_USER__, __KRZIP_DB_PASSWORD__, __KRZIP_DB_DATABASE__);
 if( is_object( $mysqli ) === false ) {
@@ -37,7 +38,7 @@ if( isset( $_REQUEST['addr3'] ) ) {
 	if(get_magic_quotes_gpc()) $addr3 = stripslashes(str_replace("\\","\\\\",$addr3));
 	if(!is_numeric($addr3)) $addr3 = $mysqli->real_escape_string($addr3);
 
-	$query = "SELECT * FROM kr_zipcode WHERE addr3 LIKE '".$addr3."%'";
+	$query = sprintf("SELECT * FROM kr_zipcode WHERE addr3 LIKE '%s'", $addr3);
 	$ret = $mysqli->query( $query );
 	if( $ret == false ) {
 		echo krzipResponse( false, "Error, Check krzip's logs file" ); 
@@ -48,8 +49,9 @@ if( isset( $_REQUEST['addr3'] ) ) {
 	    $address[] = sprintf("%s %s %s %s (%s)", $tmp->addr1, $tmp->addr2, $tmp->addr3, $tmp->addr4, $tmp->zip);
 	}
 
-	print base64_encode(serialize($address));
+	echo base64_encode(serialize($address));
 	$mysqli->close();
+	exit;
 } 
 else {
 	// 신주소 ( 도로명주소 ) 검색
@@ -68,36 +70,39 @@ else {
 	}
 
 
-	if( $_REQUEST['request'] == "addr1" ) {
+	if( $_POST['request'] == "addr1" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
 		echo krzipResponse( true, $__KRZIP_ADDR1__ );
 		$mysqli->close();
 		exit;
 	}
-	elseif( $_REQUEST['request'] == "addr2" ) {
+	elseif( $_POST['request'] == "addr2" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
-		$arrKey = array_keys( $__KRZIP_ADDR1__, $_REQUEST['search_addr1'] );
+		$arrKey = array_keys( $__KRZIP_ADDR1__, $_POST['search_addr1'] );
 		$keyAddr1 = $arrKey[0];
 		echo krzipResponse( true, $__KRZIP_ADDR2__[$keyAddr1] );
 		$mysqli->close();
 		exit;
 	}
 
-	$search_addr1 = trim($_REQUEST['search_addr1']);	// 시도 검색
-	if(get_magic_quotes_gpc()) $search_addr1 = stripslashes(str_replace("\\","\\\\",$search_addr1));
-	if(!is_numeric($search_addr1)) $search_addr1 = $mysqli->real_escape_string($search_addr1);
-
-	$search_addr2 = trim($_REQUEST['search_addr2']);	// 신군구 검색
-	if(get_magic_quotes_gpc()) $search_addr2 = stripslashes(str_replace("\\","\\\\",$search_addr2));
-	if(!is_numeric($search_addr2)) $search_addr2 = $mysqli->real_escape_string($search_addr2);
-
-	$search_word = trim($_REQUEST['search_word']);	// 도로명 + 도로번호, 동 + 번지, 건물이름 검색
-	if(!$search_word) {
-		echo krzipResponse( true, "" );
+	if( empty( $_POST['search_word'] ) ) {
+		echo krzipResponse( false, "검색 단어를 입력하세요." );
 		$mysqli->close();
 		exit;
 	}
-	if(get_magic_quotes_gpc()) $search_word = stripslashes(str_replace("\\","\\\\",$search_word));
+
+	$search_addr1 = trim($_POST['search_addr1']);	// 시도 검색
+	$search_addr2 = trim($_POST['search_addr2']);	// 신군구 검색
+	$search_word = trim($_POST['search_word']);	// 도로명 + 도로번호, 동 + 번지, 건물이름 검색
+
+	if(get_magic_quotes_gpc()) {
+		$search_addr1 = stripslashes(str_replace("\\","\\\\",$search_addr1));
+		$search_addr2 = stripslashes(str_replace("\\","\\\\",$search_addr2));
+		$search_word = stripslashes(str_replace("\\","\\\\",$search_word));
+	}
+
+	if(!is_numeric($search_addr1)) $search_addr1 = $mysqli->real_escape_string($search_addr1);
+	if(!is_numeric($search_addr2)) $search_addr2 = $mysqli->real_escape_string($search_addr2);
 	if(!is_numeric($search_word)) $search_word = $mysqli->real_escape_string($search_word);
 
 	if( function_exists( "mb_strlen" ) ) {
@@ -115,15 +120,15 @@ else {
 	}
 
 	// paging
-	$offset = !isset( $_REQUEST['next'] ) ? 1 : $_REQUEST['next'];
+	$offset = !isset( $_POST['next'] ) ? 1 : $_POST['next'];
 	if( !is_numeric( $offset ) ) $offset = 0;
-	$limit = !isset( $_REQUEST['limit'] ) ? 20 : $_REQUEST['limit'];
+	$limit = !isset( $_POST['limit'] ) ? 20 : $_POST['limit'];
 
 	$address = array();
 
 	$presetSeq = 0;
 	if( $offset == 0 ) {
-		$query = "SELECT * FROM kr_zipcode_v2{$currentVersionDate} WHERE addr1_1='{$search_addr1}' AND addr1_2='{$search_addr2}' AND ( addr2_new='{$search_word}' OR addr2_old='{$search_word}' OR bdname='{$search_word}' )";
+		$query = sprintf( "SELECT * FROM kr_zipcode_v2%s WHERE addr1_1='%s' AND addr1_2='%s' AND ( addr2_new='%s' OR addr2_old='%s' OR bdname='%s' )", $currentVersionDate, $search_addr1, $search_addr2, $search_word, $search_word, $search_word );
 		$ret = $mysqli->query( $query );
 		if( $ret == false ) {
 			echo krzipResponse( false, "Error, Check krzip's logs file" ); 
@@ -139,7 +144,7 @@ else {
 		}
 	}
 
-	$query = "SELECT * FROM kr_zipcode_v2{$currentVersionDate} WHERE addr1_1='{$search_addr1}' AND addr1_2='{$search_addr2}' AND ( addr2_new LIKE '{$search_word}%' OR addr2_old LIKE '{$search_word}%' OR bdname LIKE '{$search_word}%' ) ORDER BY addr1, addr2 LIMIT {$offset}, {$limit}";
+	$query = sprintf( "SELECT * FROM kr_zipcode_v2%s WHERE addr1_1='%s' AND addr1_2='%s' AND ( addr2_new LIKE '%s%%' OR addr2_old LIKE '%s%%' OR bdname LIKE '%s%%' ) ORDER BY addr1_1, addr1_2 LIMIT %s, %s", $currentVersionDate, $search_addr1, $search_addr2, $search_word, $search_word, $search_word, $offset, $limit );
 	$ret = $mysqli->query( $query );
 	if( $ret == false ) {
 		echo krzipResponse( false, "Error, Check krzip's logs file" ); 
