@@ -1,9 +1,55 @@
 <?php
+/* Copyright (C) NAVER <http://www.navercorp.com> */
 
-include 'config.php';
+/**
+ * function library 
+ *
+ * @author NAVER (developers@xpressengine.com)
+ */
 
-function detectUTF8($string, $return_convert = FALSE, $urldecode = TRUE)
-{
+/**
+* Make jsonp encoded type
+* @return string 
+*/
+function krzipResponse( $result, $values ) {
+	$arrRes = array();
+
+	if( is_bool( $result ) === false ) {
+		$result = false;
+		$values = "response result Not boolean";
+	}
+
+	$arrRes['result'] = $result;
+	if( is_string( $values ) === true )
+		$arrRes['msg'] = $values;
+	else
+		$arrRes['values'] = $values;
+	return $_REQUEST['callback'] . "(" . json_encode( $arrRes ) . ")";
+}
+
+/**
+* Set log
+* @return bool
+*/
+function krzipLog( $str ) {
+	$time = time();
+	$date = date( "Ymd", $time );
+	$fileName = __KRZIP_PATH__ . "/logs/krzip-".$date.".log";
+	$fp = fopen( $fileName, "a+" );
+	if( is_resource( $fp ) === false ) {
+		return false;
+	}
+	@chmod( $fileName, 0777 );
+	fwrite( $fp, date( "H:i:s", $time ) . $str . "\n" );
+	fclose( $fp );
+	return true;
+}
+
+/**
+* Check UTF-8
+* @return bool
+*/
+function krzipDetectUTF8($string, $return_convert = FALSE, $urldecode = TRUE) {
         if($urldecode)
         {
                 $string = urldecode($string);
@@ -25,48 +71,82 @@ function detectUTF8($string, $return_convert = FALSE, $urldecode = TRUE)
         return $is_utf8;
 }
 
-function checkVersionDateFile() {
-	global $path_version_date;
-
+/**
+* Check version data cache file
+* @return bool
+*/
+function krzipCheckVersionDateFile() {
 	// Check File is Writable
-	$fp = @fopen( $path_version_date, "r+" );
+	$fp = @fopen( __KRZIP_PATH_VERSION_DATE__, "r+" );
 	if( $fp == false ) {
-		$fp = @fopen( $path_version_date, "r" );
+		$fp = @fopen( __KRZIP_PATH_VERSION_DATE__, "r" );
 		if( $fp == false ) {
-			echo "File Open ERROR, Check File or Directory : {$path_version_date}";
+			return "File Open ERROR, Check File or Directory : {$path_version_date}";
 		} else {
-			echo "File Permission ERROR, Check File's Permission : {$path_version_date}";
 			fclose( $fp );
+			return "File Permission ERROR, Check File's Permission : {$path_version_date}";
 		}
-
-		return false;
 	}
 	fclose( $fp );
 	return true;
 }
 
-function getVersionDate() {
-	global $path_version_date;
-	if( empty( $path_version_date ) === true ) {
-		echo "Not Defined path-version-date";
+/**
+* Get version date from cached file
+* @return String
+*/
+function krzipGetVersionDate() {
+	$fp = fopen( __KRZIP_PATH_VERSION_DATE__, "r" );
+	if( is_resource( $fp ) == false )
 		return "";
-	}
-	$fp = fopen( $path_version_date, "r" );
 	$versionDate = trim( fgets( $fp ) );
 	fclose( $fp );
 	return $versionDate;
 }
 
-function setVersionDate( $versionDate ) {
-	global $path_version_date;
-	if( empty( $path_version_date ) === true ) {
-		echo "Not Defined path-version-date";
+/**
+* Set version date to cache file
+* return bool
+*/
+function krzipSetVersionDate( $versionDate ) {
+	$fp = fopen( __KRZIP_PATH_VERSION_DATE__, "w" );
+	if( is_resource( $fp ) == false )
 		return false;
-	}
-	$fp = fopen( $path_version_date, "w" );
+	@chmod( __KRZIP_PATH_VERSION_DATE__, 0777 );
 	fwrite( $fp, $versionDate );
 	fclose( $fp );
 	
 	return true;
+}
+
+/**
+* mysqli fetch object to array
+* $fobj = mysqli->query()->fetch_object() , mysqli result object
+* @return array
+*/
+function krzipSetResult( $fobj ) {
+	$addr1 = $fobj->addr1_1 . " " . $fobj->addr1_2;
+	if( trim( $fobj->addr1_3 ) != "" )
+	$addr1 .= " " . $fobj->addr1_3;
+	$arrResult = array(
+		"seq"	=>	$fobj->seq,
+		"addr1" =>	$addr1,
+		"addr2_new"	=>	$fobj->addr2_new,
+		"addr2_old"	=>	$fobj->addr2_old,
+		"bdname"	=>	$fobj->bdname,
+		"zipcode"	=>	$fobj->zipcode,
+	);
+
+	return $arrResult;
+}
+
+/**
+* Admin login confirm
+* @return string
+*/
+function krzipAuthenticate() {
+    header('WWW-Authenticate: Basic realm="XE Simple Admin Authentication"');
+    header('HTTP/1.0 401 Unauthorized');
+    return "You must enter a valid login ID and password to access this resource. Check your config\n";
 }
 
