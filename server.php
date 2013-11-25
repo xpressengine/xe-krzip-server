@@ -120,7 +120,7 @@ else {
 	}
 
 	// paging
-	$offset = !isset( $_POST['next'] ) ? 1 : $_POST['next'];
+	$offset = !isset( $_POST['next'] ) ? 0 : $_POST['next'];
 	if( !is_numeric( $offset ) ) $offset = 0;
 	$limit = !isset( $_POST['limit'] ) ? 20 : $_POST['limit'];
 
