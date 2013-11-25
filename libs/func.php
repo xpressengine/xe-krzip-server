@@ -29,8 +29,9 @@ function krzipResponse( $result, $values ) {
 		$arrRes['values'] = $values;
 
 	if(empty($_POST['callback']))
-		$_POST['callback'] = "defaultcallback";
-	return $_POST['callback'] . "(" . json_encode( $arrRes ) . ")";
+		return json_encode( $arrRes );
+	else
+		return $_POST['callback'] . "(" . json_encode( $arrRes ) . ")";
 }
 
 /**

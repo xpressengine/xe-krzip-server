@@ -13,7 +13,6 @@ define('__KRZIP_PATH__', dirname(__FILE__));
 include __KRZIP_PATH__ . "/conf/db.config.php";
 include __KRZIP_PATH__ . '/conf/path.config.php';
 include __KRZIP_PATH__ . '/libs/func.php';
-$_POST = $_GET;
 
 $mysqli = @new mysqli( __KRZIP_DB_HOST__, __KRZIP_DB_USER__, __KRZIP_DB_PASSWORD__, __KRZIP_DB_DATABASE__);
 if( is_object( $mysqli ) === false ) {
