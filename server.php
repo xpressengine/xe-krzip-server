@@ -37,7 +37,7 @@ if( isset( $_REQUEST['addr3'] ) ) {
 	if(get_magic_quotes_gpc()) $addr3 = stripslashes(str_replace("\\","\\\\",$addr3));
 	if(!is_numeric($addr3)) $addr3 = $mysqli->real_escape_string($addr3);
 
-	$query = sprintf("SELECT * FROM kr_zipcode WHERE addr3 LIKE '%s'", $addr3);
+	$query = sprintf("SELECT * FROM kr_zipcode WHERE addr3 LIKE '%s%%'", $addr3);
 	$ret = $mysqli->query( $query );
 	if( $ret == false ) {
 		echo krzipResponse( false, "Error, Check krzip's logs file" ); 
