@@ -7,14 +7,18 @@
  * @author NAVER (developers@xpressengine.com)
  */
 
+if (PHP_SAPI != "cli") {
+    exit;
+}
+
+// remove time limit 
+@set_time_limit(0);
+
 define('__KRZIP_PATH__', realpath( dirname(__FILE__) . "/../" ));
 
 include __KRZIP_PATH__ . "/conf/db.config.php";
 include __KRZIP_PATH__ . '/conf/path.config.php';
 include __KRZIP_PATH__ . '/libs/func.php';
-
-// remove time limit 
-@set_time_limit(0);
 
 ob_start();
 echo "KRZIP insert client 를 시작합니다.\n";
@@ -34,7 +38,7 @@ if( $mysqli->connect_errno ) {
 
 $mysqli->query("SET NAMES 'utf8'" );
 
-$strCheck=krzipCheckVersionDateFile();
+$strCheck = krzipCheckVersionDateFile();
 if( $strCheck !== true ) {
 	echo "오류 : " . __KRZIP_PATH_VERSION_DATE__ . " 파일이 존재 하지 않거나 쓰기가 금지 되어 있습니다.\n{$strCheck}";
 	exit;
@@ -114,10 +118,10 @@ $query = "CREATE TABLE `kr_zipcode_v2{$nextVersionDate}` (
   KEY addr2_new ( `addr2_new` ),
   KEY addr2_old ( `addr2_old` ),
   KEY bdname ( `bdname` )
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 ";
-$ret = $mysqli->query( $query );
-if( $ret == false ) {
+
+if( ($ret = $mysqli->query( $query )) == false ) {
 	echo "테이블 생성에 실패 했습니다.";
 	exit;
 } 
@@ -145,7 +149,7 @@ foreach( $lFileName as $fileName ) {
 
 		// UTF8 인코딩이 아닌 파일에 대한 처리
 		if( $fIconv ) 
-			$str = iconv( "CP949", "utf8", $str );
+			$str = iconv( "CP949", "utf8//IGNORE", $str );
 
 		$arrStr = explode( $separator, $str );
 		// 정상 문자열 확인
