@@ -69,30 +69,30 @@ else {
 	}
 
 
-	if( $_POST['request'] == "addr1" ) {
+	if( $_GET['request'] == "addr1" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
 		echo krzipResponse( true, $__KRZIP_ADDR1__ );
 		$mysqli->close();
 		exit;
 	}
-	elseif( $_POST['request'] == "addr2" ) {
+	elseif( $_GET['request'] == "addr2" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
-		$arrKey = array_keys( $__KRZIP_ADDR1__, $_POST['search_addr1'] );
+		$arrKey = array_keys( $__KRZIP_ADDR1__, $_GET['search_addr1'] );
 		$keyAddr1 = $arrKey[0];
 		echo krzipResponse( true, $__KRZIP_ADDR2__[$keyAddr1] );
 		$mysqli->close();
 		exit;
 	}
 
-	if( empty( $_POST['search_word'] ) ) {
+	if( empty( $_GET['search_word'] ) ) {
 		echo krzipResponse( false, "검색 단어를 입력하세요." );
 		$mysqli->close();
 		exit;
 	}
 
-	$search_addr1 = trim($_POST['search_addr1']);	// 시도 검색
-	$search_addr2 = trim($_POST['search_addr2']);	// 신군구 검색
-	$search_word = trim($_POST['search_word']);	// 도로명 + 도로번호, 동 + 번지, 건물이름 검색
+	$search_addr1 = trim($_GET['search_addr1']);	// 시도 검색
+	$search_addr2 = trim($_GET['search_addr2']);	// 신군구 검색
+	$search_word = trim($_GET['search_word']);	// 도로명 + 도로번호, 동 + 번지, 건물이름 검색
 
 	if(get_magic_quotes_gpc()) {
 		$search_addr1 = stripslashes(str_replace("\\","\\\\",$search_addr1));
@@ -119,9 +119,9 @@ else {
 	}
 
 	// paging
-	$offset = !isset( $_POST['next'] ) ? 0 : $_POST['next'];
+	$offset = !isset( $_GET['next'] ) ? 0 : $_GET['next'];
 	if( !is_numeric( $offset ) ) $offset = 0;
-	$limit = !isset( $_POST['limit'] ) ? 20 : $_POST['limit'];
+	$limit = !isset( $_GET['limit'] ) ? 20 : $_GET['limit'];
 
 	$address = array();
 
