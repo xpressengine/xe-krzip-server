@@ -40,10 +40,12 @@ if( isset( $_REQUEST['addr3'] ) ) {
 	$query = sprintf("SELECT * FROM kr_zipcode WHERE addr3 LIKE '%s%%'", $addr3);
 	$ret = $mysqli->query( $query );
 	if( $ret == false ) {
-		echo krzipResponse( false, "Error, Check krzip's logs file" ); 
+		//echo krzipResponse( false, "Error, Check krzip's logs file" ); 
 		krzipLog( "Query error : " . $mysqli->error );
+		echo base64_encode(serialize($address));
 		exit;
 	}
+	$address = array();
 	while($tmp = $ret->fetch_object()) {
 	    $address[] = sprintf("%s %s %s %s (%s)", $tmp->addr1, $tmp->addr2, $tmp->addr3, $tmp->addr4, $tmp->zip);
 	}
@@ -69,13 +71,13 @@ else {
 	}
 
 
-	if( $_GET['request'] == "addr1" ) {
+	if( isset( $_GET['request'] ) && $_GET['request'] == "addr1" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
 		echo krzipResponse( true, $__KRZIP_ADDR1__ );
 		$mysqli->close();
 		exit;
 	}
-	elseif( $_GET['request'] == "addr2" ) {
+	elseif( isset( $_GET['request'] ) && $_GET['request'] == "addr2" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
 		$arrKey = array_keys( $__KRZIP_ADDR1__, $_GET['search_addr1'] );
 		$keyAddr1 = $arrKey[0];
