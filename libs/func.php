@@ -145,7 +145,7 @@ function krzipSetResult( $fobj ) {
 		$addr1 .= " " . $fobj->addr1_3;
 	$bdname = $fobj->bdname;
 	if( trim( $fobj->addinfo ) != "" )
-		$bdname = $fobj->addinfo . " " . $fobj->bdname;
+		$bdname = $fobj->addinfo . ", " . $fobj->bdname;
 	$arrResult = array(
 		"seq"	=>	$fobj->seq,
 		"addr1" =>	$addr1,
