@@ -220,7 +220,7 @@ foreach( $lFileName as $fileName ) {
 		$strAddr3Old = join( " ", $arrAddr3Old );
 
 
-		$arrInsertValue[] = "('{$addr1}','{$addr2}','{$myun}','{$zipcode}','{$strAddr3New}', '{$strAddr3Old}','{$bdname}',{$addInfo}')";
+		$arrInsertValue[] = "('{$addr1}','{$addr2}','{$myun}','{$zipcode}','{$strAddr3New}', '{$strAddr3Old}','{$bdname}','{$addInfo}')";
 
 		if( count( $arrInsertValue ) > 200 ) {
 			$strInsertValues = join( ",", $arrInsertValue );
