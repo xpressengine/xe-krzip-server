@@ -113,12 +113,13 @@ $query = "CREATE TABLE `kr_zipcode_v2{$nextVersionDate}` (
   `addr2_new` varchar(100) NOT NULL DEFAULT '',
   `addr2_old` varchar(100) NOT NULL DEFAULT '',
   `bdname` varchar(100) NOT NULL DEFAULT '',
+  `addinfo` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY  (`seq`),
   KEY addr1 ( `addr1_1`, `addr1_2` ),
   KEY addr2_new ( `addr2_new` ),
   KEY addr2_old ( `addr2_old` ),
   KEY bdname ( `bdname` )
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ";
 
 if( ($ret = $mysqli->query( $query )) == false ) {
@@ -207,8 +208,11 @@ foreach( $lFileName as $fileName ) {
 			$arrGroundNum[] = $groundNum2;
 
 		$arrAddr3Old = array();
-		if( $dong != "" )
+		$addInfo = "";
+		if( $dong != "" ) {
 			$arrAddr3Old[] = $dong;
+			$addInfo = $dong;
+		}
 		if( $ri != "" )
 			$arrAddr3Old[] = $ri;
 		if( $arrGroundNum )
@@ -216,11 +220,11 @@ foreach( $lFileName as $fileName ) {
 		$strAddr3Old = join( " ", $arrAddr3Old );
 
 
-		$arrInsertValue[] = "('{$addr1}','{$addr2}','{$myun}','{$zipcode}','{$strAddr3New}', '{$strAddr3Old}','{$bdname}')";
+		$arrInsertValue[] = "('{$addr1}','{$addr2}','{$myun}','{$zipcode}','{$strAddr3New}', '{$strAddr3Old}','{$bdname}',{$addInfo}')";
 
 		if( count( $arrInsertValue ) > 200 ) {
 			$strInsertValues = join( ",", $arrInsertValue );
-			$query = "INSERT INTO kr_zipcode_v2{$nextVersionDate} (addr1_1, addr1_2, addr1_3, zipcode, addr2_new, addr2_old, bdname ) VALUES {$strInsertValues}";
+			$query = "INSERT INTO kr_zipcode_v2{$nextVersionDate} (addr1_1, addr1_2, addr1_3, zipcode, addr2_new, addr2_old, bdname, addinfo ) VALUES {$strInsertValues}";
 			$mysqli->query( $query );
 			$arrInsertValue = array();	// reset
 			
@@ -238,7 +242,7 @@ foreach( $lFileName as $fileName ) {
 
 	if( empty( $arrInsertValue ) === false ) {
 		$strInsertValues = join( ",", $arrInsertValue );
-		$query = "INSERT INTO kr_zipcode_v2{$nextVersionDate} (addr1_1, addr1_2, addr1_3, zipcode, addr2_new, addr2_old, bdname ) VALUES {$strInsertValues}";
+		$query = "INSERT INTO kr_zipcode_v2{$nextVersionDate} (addr1_1, addr1_2, addr1_3, zipcode, addr2_new, addr2_old, bdname, addinfo ) VALUES {$strInsertValues}";
 		$mysqli->query( $query );
 		$arrInsertValue = array();	// reset
 		echo ".";

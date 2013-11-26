@@ -142,13 +142,16 @@ function krzipSetVersionDate( $versionDate ) {
 function krzipSetResult( $fobj ) {
 	$addr1 = $fobj->addr1_1 . " " . $fobj->addr1_2;
 	if( trim( $fobj->addr1_3 ) != "" )
-	$addr1 .= " " . $fobj->addr1_3;
+		$addr1 .= " " . $fobj->addr1_3;
+	$bdname = $fobj->bdname;
+	if( trim( $fobj->addinfo ) ) != "" )
+		$bdname = $fobj->addinfo . " " . $fobj->bdname;
 	$arrResult = array(
 		"seq"	=>	$fobj->seq,
 		"addr1" =>	$addr1,
 		"addr2_new"	=>	$fobj->addr2_new,
 		"addr2_old"	=>	$fobj->addr2_old,
-		"bdname"	=>	$fobj->bdname,
+		"bdname"	=>	$bdname,
 		"zipcode"	=>	$fobj->zipcode,
 	);
 
