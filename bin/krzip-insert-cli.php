@@ -25,7 +25,7 @@ echo "KRZIP insert client 를 시작합니다.\n";
 ob_flush();
 flush();
 
-$mysqli = @new mysqli( __KRZIP_DB_HOST__, __KRZIP_DB_USER__, __KRZIP_DB_PASSWORD__, __KRZIP_DB_DATABASE__);
+$mysqli = @new mysqli( __KRZIP_DB_HOST__, __KRZIP_DB_USER__, __KRZIP_DB_PASSWORD__, __KRZIP_DB_DATABASE__, __KRZIP_DB_PORT__ );
 if( is_object( $mysqli ) === false ) {
         echo "Can't connect server : " . $mysqli->error;
         exit;

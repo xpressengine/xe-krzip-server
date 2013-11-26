@@ -14,7 +14,7 @@ include __KRZIP_PATH__ . "/conf/db.config.php";
 include __KRZIP_PATH__ . '/conf/path.config.php';
 include __KRZIP_PATH__ . '/libs/func.php';
 
-$mysqli = @new mysqli( __KRZIP_DB_HOST__, __KRZIP_DB_USER__, __KRZIP_DB_PASSWORD__, __KRZIP_DB_DATABASE__);
+$mysqli = @new mysqli( __KRZIP_DB_HOST__, __KRZIP_DB_USER__, __KRZIP_DB_PASSWORD__, __KRZIP_DB_DATABASE__, __KRZIP_DB_PORT__ );
 if( is_object( $mysqli ) === false ) {
 	echo krzipResponse( false, "Error, Check krzip's logs file" ); 
 	krzipLog( "Can't connect server : " );
