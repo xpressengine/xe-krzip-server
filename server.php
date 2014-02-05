@@ -73,7 +73,12 @@ else {
 
 	if( isset( $_GET['request'] ) && $_GET['request'] == "addr1" ) {
 		include __KRZIP_PATH_CACHE_ADDR__ . $currentVersionDate . ".php";
-		echo krzipResponse( true, $__KRZIP_ADDR1__ );
+		asort($__KRZIP_ADDR1__);
+		$tmp = array();
+		foreach($__KRZIP_ADDR1__ as $value)
+			 $tmp[] = $value;
+		//echo krzipResponse( true, $__KRZIP_ADDR1__ );
+		echo krzipResponse( true, $tmp);
 		$mysqli->close();
 		exit;
 	}
