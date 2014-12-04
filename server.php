@@ -150,7 +150,7 @@ else {
 		}
 	}
 
-	$query = sprintf( "SELECT * FROM kr_zipcode_v2%s WHERE addr1_1='%s' AND addr1_2='%s' AND ( addr2_new LIKE '%s%%' OR addr2_old LIKE '%s%%' OR bdname LIKE '%s%%' ) ORDER BY addr1_1, addr1_2 LIMIT %s, %s", $currentVersionDate, $search_addr1, $search_addr2, $search_word, $search_word, $search_word, $offset, $limit );
+	$query = sprintf( "SELECT * FROM kr_zipcode_v2%s WHERE addr1_1='%s' AND addr1_2='%s' AND ( addr2_new LIKE '%s%%' OR addr2_old LIKE '%s%%' OR bdname LIKE '%%%s%%' ) ORDER BY addr1_1, addr1_2 LIMIT %s, %s", $currentVersionDate, $search_addr1, $search_addr2, $search_word, $search_word, $search_word, $offset, $limit );
 	$ret = $mysqli->query( $query );
 	if( $ret == false ) {
 		echo krzipResponse( false, "Error, Check krzip's logs file" ); 
